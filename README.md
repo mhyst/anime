@@ -38,7 +38,7 @@ En realidad sintel hace casi todo el trabajo. El script 'anime' lo único que ha
 
 Basta con clonar el repositorio y mover el archivo 'anime' a cualquier carpeta que se encuentre en el PATH. Las posibilidades son varias, aunque las más recomendables son estas:
 
-. /usr/local/bin
+- /usr/local/bin
 - /home/<usuario>/bin
 
 Puesto que este script requiere tener sintel instalado, recomendamos mirar el proceso de instalación de sintel en el [link](https://github.com/mhyst/sintel "repositorio correspondiente").
