@@ -1,0 +1,87 @@
+#!/bin/bash
+#Script para ver animes que seguimos
+#Utiliza sintel
+declare -a animes
+declare -a anime
+declare -a longitud
+MAXWIDTH=30
+USERCHOICE=-1
+BROWSER=firefox
+
+function userChoice() {
+
+	local limite=$1
+	local reply
+	let reply=0
+
+	echo > /dev/tty
+	echo -e "Introduzca el número del anime que quiere ver: \c" > /dev/tty
+	read reply < /dev/tty
+	echo > /dev/tty
+
+	#We see if the user entered a number such as we need
+	while [[ "$reply" -lt 1 ]] || [[ "$reply" -gt  $limite ]]; do
+
+		#We give advice to the user and exit
+		echo -e "Tiene que introducir un número de entre los indicados: \c" > /dev/tty
+		read reply < /dev/tty
+		echo "Reply es: $reply" > /dev/tty
+
+	done
+
+	echo $reply
+}
+
+function lpad() {
+	local len="$1"
+	local l=$((MAXWIDTH-len))
+
+	while (($l > 0)); do
+		echo -e " \c"
+		l=$(($l - 1))
+    done
+}
+
+fanimes=$(sintel -f anime.list)
+
+readarray -t animes <<< "$fanimes"
+
+i=0
+for linea in "${animes[@]}"; do
+	IFS='|' read -r -a anime <<< "$linea"; IFS=" "
+	longitud[$i]=${#anime[1]}
+	if [[ $# > 0 ]]; then
+		if echo ${anime[1]} | grep -i $1; then
+			USERCHOICE=${anime[0]}
+			break
+		fi
+	fi
+	((i++))
+done
+if [[ $USERCHOICE == -1 ]]; then
+	i=0
+	echo "Lista de anime que sigue"
+	echo "----------------------------------------------"
+	echo
+	for linea in "${animes[@]}"; do
+		IFS='|' read -r -a anime <<< "$linea"; IFS=" "
+		echo -e "${anime[0]} - ${anime[1]} $(lpad ${longitud[i]})--> ${anime[4]}"
+		((i++))
+	done
+	echo
+	echo "----------------------------------------------"
+	LIMITE=$(( ${#animes[*]}))
+	USERCHOICE=$(userChoice $LIMITE)
+fi
+echo "Usted ha elegido el: $USERCHOICE"
+
+IFS='|' read -r -a anime <<< "${animes[$USERCHOICE-1]}"; IFS=" "
+firefox "http://${anime[2]}${anime[4]}"
+echo
+echo -e "¿Desea avanzar el anime al siguiente episodio? (s/n): \c"
+read res
+if [[ $res = 's' ]] || [[ $res = 'S' ]]; then
+	sintel -f anime.next:${anime[0]}
+	echo "El puntero del anime se movió al siguiente episodio"
+fi
+
