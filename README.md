@@ -9,6 +9,12 @@ Ese es el problema que he tratado de resolver con este script. Imaginemos una si
 
 Con este simple script podemos cerrar todas esas pestañas de anime que tenemos abiertas y saber en todo momento por qué episodio nos llegábamos de aquel anime tan bueno que hace tiempo que dejamos de ver.
 
+## Motivo por el que este script utiliza sintel
+
+Sintel ya incluye todo el tratamiento de la base de datos, varios módulos y montones de funciones disponibles; todo lo cual hace que crear un módulo de anime dentro de sintel fuera más sencillo y rápido que escribir todo el script de cero. Sintel es un trabajo en progreso que ha ido creciendo conforme lo he ido necesitando. Creció tan rápido que aunque al principio iba a contar con un interfaz de línea de comandos complejo, es decir, un nombre de opción para cada función pública, muy pronto me di cuenta que iba a ser mucho más práctico si ideara una manera de invocar cualquier función y pasarle argumentos directamente por la línea de comandos en lugar de hacerlo con opciones más crípticas. Así fue como surgió primero la opción de invocación de funciones '-f' y finalmente la más avanzada '-n'.
+
+Por lo tanto el script, más que algo completo, es una especie de frontend del módulo anime de sintel.
+
 ## Dependencias
 - sqlite3 (por sintel)
 - sintel
