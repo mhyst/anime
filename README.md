@@ -1,12 +1,12 @@
-# anime
+# anime #
 Mantiene el control del anime que sigues
 
-## Dependencias
+## Dependencias ##
 - sqlite3 (por sintel)
 - sintel
 - un navegador
 
-## Inicializar la base de datos de anime
+## Inicializar la base de datos de anime ##
 
 Por el momento el script no permite agregar animes. Para agregarlos hay que utilizar sintel de la siguiente forma:
 ---
@@ -22,7 +22,7 @@ sintel -n anime.list
 ---
 En realidad sintel hace casi todo el trabajo. El script 'anime' lo único que hace es presentar los datos de una forma más amigable para el usuario.
 
-## Instalación
+## Instalación ##
 
 Basta con clonar el repositorio y mover el archivo 'anime' a cualquier carpeta que se encuentre en el PATH. Las posibilidades son varias, aunque las más recomendables son estas:
 . /usr/local/bin
