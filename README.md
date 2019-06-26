@@ -41,4 +41,4 @@ Basta con clonar el repositorio y mover el archivo 'anime' a cualquier carpeta q
 - /usr/local/bin
 - /home/<usuario>/bin
 
-Puesto que este script requiere tener sintel instalado, recomendamos mirar el proceso de instalación de sintel en el [link](https://github.com/mhyst/sintel "repositorio correspondiente").
+Puesto que este script requiere tener sintel instalado, recomendamos mirar el proceso de instalación de sintel en el [repositorio correspondiente](https://github.com/mhyst/sintel).
