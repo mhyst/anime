@@ -55,4 +55,14 @@ Basta con clonar el repositorio y mover el archivo 'anime' a cualquier carpeta q
 - /usr/local/bin
 - /home/<usuario>/bin
 
+Alternativamente puede descargarse el paquete deb de la última release. Una vez descargado basta con ejecutar:
+
+---
+
+sudo dpkg -i anime-sintel.1.0.deb
+
+---
+
+Para poder instalarlo de esta manera debe instalar antes sintel mediante el mismo procedimiento.
+
 Puesto que este script requiere tener sintel instalado, recomendamos mirar el proceso de instalación de sintel en el [repositorio correspondiente](https://github.com/mhyst/sintel).
