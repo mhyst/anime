@@ -48,6 +48,8 @@ sintel -n anime.list
 
 En realidad sintel hace casi todo el trabajo. El script 'anime' lo único que hace es presentar los datos de una forma más amigable para el usuario.
 
+> A partir de la versión 1.0.1 el script cuenta con las opciones -u, -f y -b que permiten actualizar el episodio, avanzar el puntero y retroceder el puntero respectivamente. Con estas opciones se facilita mucho la gestión del número de episodio, pero sigue siendo necesario utilizar directamente sintel para añadir animes nuevos.
+
 ## Instalación ##
 
 Basta con clonar el repositorio y mover el archivo 'anime' a cualquier carpeta que se encuentre en el PATH. Las posibilidades son varias, aunque las más recomendables son estas:
