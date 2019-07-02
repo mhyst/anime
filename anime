@@ -1,6 +1,7 @@
 #!/bin/bash
 #Script para ver animes que seguimos
 #Utiliza sintel
+VERSION="1.0.1"
 declare -a animes
 declare -a anime
 declare -a longitud
@@ -42,6 +43,109 @@ function lpad() {
     done
 }
 
+function help {
+	echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
+	echo "Mantiene lista de anime que sigues"
+	echo
+	echo "Modo de empleo: anime [opción] [<cadena de búsqueda>]"
+	echo
+	echo " Ejemplos:"
+	echo 	anime kyojin
+	echo
+	echo	anime -u kyojin 16
+	echo
+	echo "Opciones"
+	echo " -u"
+	echo "      Actualizar siguiente episodio a ver."
+	echo
+	echo " -f"
+	echo "      Avanzar el puntero de la serie."
+	echo
+	echo " -b"
+	echo "      Retroceder el puntero de la serie."
+	echo
+}
+
+function preprocessAnime() {
+	local USERCHOICE=-1
+
+	
+	echo "$USERCHOICE"
+}
+
+function forth() {
+	local id="$1"
+	local episodio=$2
+
+	(( episodio = episodio + forthNumber ))
+	sintel -n anime.updateEpisodio:"$id|$episodio"
+
+	echo "El puntero del anime con id: $id ha sido avanzado al episodio $episodio." > /dev/tty
+}
+
+function back() {
+	local id="$1"
+	local episodio=$2
+
+	if (( episodio > 1 )); then
+		(( episodio = episodio - backNumber ))
+		sintel -n anime.updateEpisodio:"$id|$episodio"
+		echo "El puntero del anime con id: $id ha retrocedido al episodio $episodio." > /dev/tty
+	fi
+}
+
+
+TEMP=`getopt -o hufb --long "help,update,forth,back" -- "$@"`
+
+
+
+if [ $? != 0 ]; then help; exit 1; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+
+# Debug
+#echo "$TEMP"
+
+### Opciones ###
+isUpdate=false
+forthNumber=0
+backNumber=0
+
+while true; do
+  case "$1" in
+  	-h | --help ) help; exit ;;
+	-u | --update ) isUpdate=true; shift ;;
+	-f | --forth ) let forthNumber++; shift ;;
+	-b | --back ) let backNumber++; shift ;;
+	# -b | --back ) let back++ ;;
+	# -f | --forth ) let forth_number++ ;;
+	# --forth-by ) forth_number=$2; shift ;;
+	# -a | --forth-all ) forth_all=true ;;
+	# -n ) VER_NO_VISTOS=true ;;
+    # -v ) VER_VISTOS=true ;;
+	# -r | --reset ) reset=true ;;
+	# -m | --mreset ) reset_data+=("$2"); shift ;;
+	# --reset-by ) reset_by=true; bydata=$2; shift ;;
+    * ) break ;;
+  esac
+  shift
+done
+
+if [[ $1 = "--" ]]; then
+	shift
+fi
+
+echo "Parámetros: $temporada $capitulo $servicio"
+echo "Argumentos: $1 $2 $3 $4 $5 $6 $7 $8 $9"
+
+
+echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
+echo "Mantiene una lista de anime que sigues para"
+echo "no perder de vista en qué episodio estás"
+echo
+
 fanimes=$(sintel -f anime.list)
 
 readarray -t animes <<< "$fanimes"
@@ -58,6 +162,7 @@ for linea in "${animes[@]}"; do
 	fi
 	((i++))
 done
+
 if [[ $USERCHOICE == -1 ]]; then
 	i=0
 	echo "Lista de anime que sigue"
@@ -72,10 +177,40 @@ if [[ $USERCHOICE == -1 ]]; then
 	echo "----------------------------------------------"
 	LIMITE=$(( ${#animes[*]}))
 	USERCHOICE=$(userChoice $LIMITE)
+else
+	shift
 fi
 echo "Usted ha elegido el: $USERCHOICE"
 
 IFS='|' read -r -a anime <<< "${animes[$USERCHOICE-1]}"; IFS=" "
+
+if $isUpdate; then
+	#echo "Argumentos restantes: $@"
+	if [[ $# < 1 ]]; then
+		echo "Debe indicar el número de episodio para poder actualizar." >&2
+		exit 1
+	fi
+	
+	re='^[0-9]+$'
+	if ! [[ $1 =~ $re ]]; then
+		echo "El número de episodio debe ser un número." >&2
+		exit 1
+	fi 
+	
+	sintel -n anime.updateEpisodio:"$USERCHOICE|$1"
+	exit 0
+else
+	if (( forthNumber > 0 )); then
+		forth ${anime[0]} ${anime[4]}
+		exit 0
+	fi
+	if (( backNumber > 0 )); then
+		back ${anime[0]} ${anime[4]}
+		exit 0
+	fi
+fi
+
+# Reproducimos el episodio
 firefox "http://${anime[2]}${anime[4]}"
 echo
 echo -e "¿Desea avanzar el anime al siguiente episodio? (s/n): \c"
