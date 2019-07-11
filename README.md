@@ -1,6 +1,10 @@
 # anime 
 Mantiene el control del anime que sigues
 
+## Novedades
+
+- Hay disponible nuevo script '**veronline**' que permite seguir las series que vemos online en webs de enlaces.
+
 ## Problemática
 
 Me gusta el anime. Y he descubierto que no importa el empeño que le pongas, siempre hay series anime de las que ya no te quedan episodios por ver hasta que saquen el siguiente o la siguiente temporada. Acabas rellenando el hueco dejado con otro anime. Este esquema de cosas tiende a replicarse y al final acabas con un buen número de series que sigues. Y entonces descubres que de tal anime que te gustaba mucho no recuerdas por qué episodio te llegabas. Muchas veces he hecho el apaño de dejar varias pestañas del navegador con jkanime o animeflv abiertas para no perder el hilo. Pero esa solución acaba desaprovechando recursos y tampoco es muy bueno el uso de marcadores, a menos que dediques tu tiempo a mantenerlos actualizados. No es imposible, pero tampoco cómodo.

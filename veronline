@@ -1,9 +1,9 @@
 #!/bin/bash
-#Script para ver animes que seguimos
+#Script para ver series online que seguimos
 #Utiliza sintel
 VERSION="1.1.0"
-declare -a animes
-declare -a anime
+declare -a series
+declare -a serie
 declare -a longitud
 MAXWIDTH=30
 USERCHOICE=-1
@@ -16,7 +16,7 @@ function userChoice() {
 	let reply=0
 
 	echo > /dev/tty
-	echo -e "Introduzca el número del anime que quiere ver: \c" > /dev/tty
+	echo -e "Introduzca el número de la serie que quiere ver: \c" > /dev/tty
 	read reply < /dev/tty
 	echo > /dev/tty
 
@@ -47,23 +47,23 @@ function getSeason() {
 	local url="$1"
 
 	local s_season=$(grep -Eo '/season/[0-9]{1,2}/' <<< $url)
-	if [[ $s_season != "" ]]; then
-		s_season=${s_season:0:-1}
-		local season=${s_season:8}
-		echo "\tT: $season"
-	fi
+	s_season=${s_season:0:-1}
+	local season=${s_season:8}
+
+	echo "$season"
+
 }
 
 function help {
-	echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
-	echo "Mantiene lista de anime que sigues"
+	echo "veronline $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
+	echo "Mantiene lista de series online que sigues."
 	echo
-	echo "Modo de empleo: anime [opción] [<cadena de búsqueda>]"
+	echo "Modo de empleo: veronline [opción] [<cadena de búsqueda>]"
 	echo
 	echo " Ejemplos:"
-	echo 	anime kyojin
+	echo 	veronline kyojin
 	echo
-	echo	anime -u kyojin 16
+	echo	veronline -u kyojin 16
 	echo
 	echo "Opciones"
 	echo " -u"
@@ -82,9 +82,9 @@ function forth() {
 	local episodio=$2
 
 	(( episodio = episodio + forthNumber ))
-	sintel -n anime.updateEpisodio:"$id|$episodio"
+	sintel -n veronline.updateEpisodio:"$id|$episodio"
 
-	echo "El puntero del anime con id: $id ha sido avanzado al episodio $episodio." > /dev/tty
+	echo "El puntero de la serie con id: $id ha sido avanzado al episodio $episodio." > /dev/tty
 }
 
 function back() {
@@ -93,8 +93,8 @@ function back() {
 
 	if (( episodio > 1 )); then
 		(( episodio = episodio - backNumber ))
-		sintel -n anime.updateEpisodio:"$id|$episodio"
-		echo "El puntero del anime con id: $id ha retrocedido al episodio $episodio." > /dev/tty
+		sintel -n veronline.updateEpisodio:"$id|$episodio"
+		echo "El puntero de la serie con id: $id ha retrocedido al episodio $episodio." > /dev/tty
 	fi
 }
 
@@ -141,31 +141,32 @@ if [[ $1 = "--" ]]; then
 	shift
 fi
 
-#echo "Parámetros: $temporada $capitulo $servicio"
-#echo "Argumentos: $1 $2 $3 $4 $5 $6 $7 $8 $9"
+# echo "Parámetros: $temporada $capitulo $servicio"
+# echo "Argumentos: $1 $2 $3 $4 $5 $6 $7 $8 $9"
 
 
-echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
-echo "Mantiene una lista de anime que sigues para"
-echo "no perder de vista en qué episodio estás"
+echo "veronline $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
+echo "Mantiene una lista de las series online que sigues para"
+echo "no perder de vista en qué episodio estás."
 echo
 
-fanimes=$(sintel -f anime.list)
+fseries=$(sintel -f veronline.list)
 
-if [[ ${#fanimes} == 0 ]]; then
-	echo "No hay ningún anime en la base de datos"
+if [[ ${#fseries} == 0 ]]; then
+	echo "No hay ninguna serie en la base de datos"
 	exit 1
 fi
 
-readarray -t animes <<< "$fanimes"
+
+readarray -t series <<< "$fseries"
 
 i=0
-for linea in "${animes[@]}"; do
-	IFS='|' read -r -a anime <<< "$linea"; IFS=" "
-	longitud[$i]=${#anime[1]}
+for linea in "${series[@]}"; do
+	IFS='|' read -r -a serie <<< "$linea"; IFS=" "
+	longitud[$i]=${#serie[1]}
 	if [[ $# > 0 ]]; then
-		if echo ${anime[1]} | grep -i $1; then
-			USERCHOICE=${anime[0]}
+		if echo ${serie[1]} | grep -i $1; then
+			USERCHOICE=${serie[0]}
 			break
 		fi
 	fi
@@ -174,25 +175,25 @@ done
 
 if [[ $USERCHOICE == -1 ]]; then
 	i=0
-	echo "Lista de anime que sigue"
+	echo "Lista de series que sigue"
 	echo "----------------------------------------------"
 	echo
-	for linea in "${animes[@]}"; do
-		IFS='|' read -r -a anime <<< "$linea"; IFS=" "
-		temporada=$(getSeason "${anime[2]}")
-		echo -e "${anime[0]} - ${anime[1]} $(lpad ${longitud[i]})--> ${anime[4]} $temporada"
+	for linea in "${series[@]}"; do
+		IFS='|' read -r -a serie <<< "$linea"; IFS=" "
+		temporada=$(getSeason "${serie[2]}")
+		echo -e "${serie[0]} - ${serie[1]} $(lpad ${longitud[i]})--> ${serie[4]}\t/T: $temporada "
 		((i++))
 	done
 	echo
 	echo "----------------------------------------------"
-	LIMITE=$(( ${#animes[*]}))
+	LIMITE=$(( ${#series[*]}))
 	USERCHOICE=$(userChoice $LIMITE)
 else
 	shift
 fi
 echo "Usted ha elegido el: $USERCHOICE"
 
-IFS='|' read -r -a anime <<< "${animes[$USERCHOICE-1]}"; IFS=" "
+IFS='|' read -r -a serie <<< "${series[$USERCHOICE-1]}"; IFS=" "
 
 if $isUpdate; then
 	#echo "Argumentos restantes: $@"
@@ -207,27 +208,27 @@ if $isUpdate; then
 		exit 1
 	fi 
 	
-	sintel -n anime.updateEpisodio:"$USERCHOICE|$1"
-	echo "El puntero de la serie ${anime[1]} ha sido actualizado a $1"
+	sintel -n veronline.updateEpisodio:"$USERCHOICE|$1"
+	echo "El puntero de la serie ${serie[1]} ha sido actualizado a $1"
 	exit 0
 else
 	if (( forthNumber > 0 )); then
-		forth ${anime[0]} ${anime[4]}
+		forth ${serie[0]} ${serie[4]}
 		exit 0
 	fi
 	if (( backNumber > 0 )); then
-		back ${anime[0]} ${anime[4]}
+		back ${serie0]} ${serie[4]}
 		exit 0
 	fi
 fi
 
 # Reproducimos el episodio
-firefox "http://${anime[2]}${anime[4]}"
+$BROWSER "http://${serie[2]}${serie[4]}"
 echo
-echo -e "¿Desea avanzar el anime al siguiente episodio? (s/n): \c"
+echo -e "¿Desea avanzar el puntero al siguiente episodio? (s/n): \c"
 read res
 if [[ $res = 's' ]] || [[ $res = 'S' ]]; then
-	sintel -f anime.next:${anime[0]}
-	echo "El puntero del anime se movió al siguiente episodio"
+	sintel -f veronline.next:${anime[0]}
+	echo "El puntero de la serie se movió al siguiente episodio"
 fi
 
