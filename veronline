@@ -217,7 +217,7 @@ else
 		exit 0
 	fi
 	if (( backNumber > 0 )); then
-		back ${serie0]} ${serie[4]}
+		back ${serie[0]} ${serie[4]}
 		exit 0
 	fi
 fi
@@ -228,7 +228,7 @@ echo
 echo -e "¿Desea avanzar el puntero al siguiente episodio? (s/n): \c"
 read res
 if [[ $res = 's' ]] || [[ $res = 'S' ]]; then
-	sintel -f veronline.next:${anime[0]}
+	sintel -f veronline.next:${serie[0]}
 	echo "El puntero de la serie se movió al siguiente episodio"
 fi
 
