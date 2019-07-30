@@ -1,101 +1,102 @@
 #!/bin/bash
 #Script para ver animes que seguimos
 #Utiliza sintel
-VERSION="1.1.0"
+
+VERSION="1.1.2"
 declare -a animes
 declare -a anime
 declare -a longitud
 MAXWIDTH=30
 USERCHOICE=-1
-BROWSER=firefox
 
 function userChoice() {
 
-	local limite=$1
-	local reply
-	let reply=0
+    local limite=$1
+    local reply
 
-	echo > /dev/tty
-	echo -e "Introduzca el número del anime que quiere ver: \c" > /dev/tty
+    let reply=0
+
+    echo > /dev/tty
+    echo -e "Seleccione el anime (CONTROL+C para salir): \c" > /dev/tty
+    read reply < /dev/tty
+    echo > /dev/tty
+
+    #We see if the user entered a number such as we need
+    while [[ "$reply" -lt 1 ]] || [[ "$reply" -gt  $limite ]]; do
+
+    	#We give advice to the user and exit
+	echo -e "Tiene que introducir un número de entre los indicados: \c" > /dev/tty
 	read reply < /dev/tty
-	echo > /dev/tty
+	echo "Reply es: $reply" > /dev/tty
 
-	#We see if the user entered a number such as we need
-	while [[ "$reply" -lt 1 ]] || [[ "$reply" -gt  $limite ]]; do
+    done
 
-		#We give advice to the user and exit
-		echo -e "Tiene que introducir un número de entre los indicados: \c" > /dev/tty
-		read reply < /dev/tty
-		echo "Reply es: $reply" > /dev/tty
-
-	done
-
-	echo $reply
+    echo $reply
 }
 
 function lpad() {
-	local len="$1"
-	local l=$((MAXWIDTH-len))
+    local len="$1"
+    local l=$((MAXWIDTH-len))
 
-	while (($l > 0)); do
-		echo -e " \c"
-		l=$(($l - 1))
+    while (($l > 0)); do
+	echo -e " \c"
+	l=$(($l - 1))
     done
 }
 
 function getSeason() {
-	local url="$1"
+    local url="$1"
 
-	local s_season=$(grep -Eo '/season/[0-9]{1,2}/' <<< $url)
-	if [[ $s_season != "" ]]; then
-		s_season=${s_season:0:-1}
-		local season=${s_season:8}
-		echo "\tT: $season"
-	fi
+    local s_season=$(grep -Eo '/season/[0-9]{1,2}/' <<< $url)
+    if [[ $s_season != "" ]]; then
+    	s_season=${s_season:0:-1}
+	local season=${s_season:8}
+	echo "\tT: $season"
+    fi
 }
 
 function help {
-	echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
-	echo "Mantiene lista de anime que sigues"
-	echo
-	echo "Modo de empleo: anime [opción] [<cadena de búsqueda>]"
-	echo
-	echo " Ejemplos:"
-	echo 	anime kyojin
-	echo
-	echo	anime -u kyojin 16
-	echo
-	echo "Opciones"
-	echo " -u"
-	echo "      Actualizar siguiente episodio a ver."
-	echo
-	echo " -f"
-	echo "      Avanzar el puntero de la serie."
-	echo
-	echo " -b"
-	echo "      Retroceder el puntero de la serie."
-	echo
+    echo "anime $VERSION - Copyleft (GPL v3) Julio Serrano 2019"
+    echo "Mantiene lista de anime que sigues"
+    echo
+    echo "Modo de empleo: anime [opción] [<cadena de búsqueda>]"
+    echo
+    echo " Ejemplos:"
+    echo 	anime kyojin
+    echo
+    echo	anime -u kyojin 16
+    echo
+    echo "Opciones"
+    echo " -u"
+    echo "      Actualizar siguiente episodio a ver."
+    echo
+    echo " -f"
+    echo "      Avanzar el puntero de la serie."
+    echo
+    echo " -b"
+    echo "      Retroceder el puntero de la serie."
+    echo
 }
 
 function forth() {
-	local id="$1"
-	local episodio=$2
+    local id="$1"
+    local episodio=$2
 
-	(( episodio = episodio + forthNumber ))
-	sintel -n anime.updateEpisodio:"$id|$episodio"
+    (( episodio = episodio + forthNumber ))
+    sintel -n anime.updateEpisodio:"$id|$episodio"
 
-	echo "El puntero del anime con id: $id ha sido avanzado al episodio $episodio." > /dev/tty
+    echo "El puntero del anime con id: $id ha sido avanzado al episodio $episodio." > /dev/tty
 }
 
 function back() {
-	local id="$1"
-	local episodio=$2
+    local id="$1"
+    local episodio=$2
 
-	if (( episodio > 1 )); then
-		(( episodio = episodio - backNumber ))
-		sintel -n anime.updateEpisodio:"$id|$episodio"
-		echo "El puntero del anime con id: $id ha retrocedido al episodio $episodio." > /dev/tty
-	fi
+    if (( episodio > 1 )); then
+    	(( episodio = episodio - backNumber ))
+    	sintel -n anime.updateEpisodio:"$id|$episodio"
+    	echo "El puntero del anime con id: $id ha retrocedido al episodio $episodio." > /dev/tty
+    fi
 }
 
 
@@ -119,26 +120,17 @@ backNumber=0
 
 while true; do
   case "$1" in
-  	-h | --help ) help; exit ;;
-	-u | --update ) isUpdate=true; shift ;;
-	-f | --forth ) let forthNumber++; shift ;;
-	-b | --back ) let backNumber++; shift ;;
-	# -b | --back ) let back++ ;;
-	# -f | --forth ) let forth_number++ ;;
-	# --forth-by ) forth_number=$2; shift ;;
-	# -a | --forth-all ) forth_all=true ;;
-	# -n ) VER_NO_VISTOS=true ;;
-    # -v ) VER_VISTOS=true ;;
-	# -r | --reset ) reset=true ;;
-	# -m | --mreset ) reset_data+=("$2"); shift ;;
-	# --reset-by ) reset_by=true; bydata=$2; shift ;;
+    -h | --help ) help; exit ;;
+    -u | --update ) isUpdate=true; shift ;;
+    -f | --forth ) let forthNumber++; shift ;;
+    -b | --back ) let backNumber++; shift ;;
     * ) break ;;
   esac
   shift
 done
 
 if [[ $1 = "--" ]]; then
-	shift
+    shift
 fi
 
 #echo "Parámetros: $temporada $capitulo $servicio"
@@ -153,81 +145,80 @@ echo
 fanimes=$(sintel -f anime.list)
 
 if [[ ${#fanimes} == 0 ]]; then
-	echo "No hay ningún anime en la base de datos"
-	exit 1
+    echo "No hay ningún anime en la base de datos"
+    exit 1
 fi
 
 readarray -t animes <<< "$fanimes"
 
 i=0
 for linea in "${animes[@]}"; do
-	IFS='|' read -r -a anime <<< "$linea"; IFS=" "
-	longitud[$i]=${#anime[1]}
-	if [[ $# > 0 ]]; then
-		if echo ${anime[1]} | grep -i $1; then
-			USERCHOICE=${anime[0]}
-			break
-		fi
+    IFS='|' read -r -a anime <<< "$linea"; IFS=" "
+    longitud[$i]=${#anime[1]}
+    if [[ $# > 0 ]]; then
+    	if echo ${anime[1]} | grep -i $1; then
+	   USERCHOICE=${anime[0]}
+	    break
 	fi
-	((i++))
+    fi
+    ((i++))
 done
 
 if [[ $USERCHOICE == -1 ]]; then
-	i=0
-	echo "Lista de anime que sigue"
-	echo "----------------------------------------------"
-	echo
-	for linea in "${animes[@]}"; do
-		IFS='|' read -r -a anime <<< "$linea"; IFS=" "
-		temporada=$(getSeason "${anime[2]}")
-		echo -e "${anime[0]} - ${anime[1]} $(lpad ${longitud[i]})--> ${anime[4]} $temporada"
-		((i++))
-	done
-	echo
-	echo "----------------------------------------------"
-	LIMITE=$(( ${#animes[*]}))
-	USERCHOICE=$(userChoice $LIMITE)
+    i=0
+    echo "Lista de anime que sigue"
+    echo "----------------------------------------------"
+    echo
+    for linea in "${animes[@]}"; do
+    	IFS='|' read -r -a anime <<< "$linea"; IFS=" "
+    	temporada=$(getSeason "${anime[2]}")
+    	echo -e "${anime[0]} - ${anime[1]} $(lpad ${longitud[i]})--> ${anime[4]} $temporada"
+	((i++))
+    done
+    echo
+    echo "----------------------------------------------"
+    LIMITE=$(( ${#animes[*]}))
+    USERCHOICE=$(userChoice $LIMITE)
 else
-	shift
+    shift
 fi
 echo "Usted ha elegido el: $USERCHOICE"
 
 IFS='|' read -r -a anime <<< "${animes[$USERCHOICE-1]}"; IFS=" "
 
 if $isUpdate; then
-	#echo "Argumentos restantes: $@"
-	if [[ $# < 1 ]]; then
-		echo "Debe indicar el número de episodio para poder actualizar." >&2
-		exit 1
-	fi
+    #echo "Argumentos restantes: $@"
+    if [[ $# < 1 ]]; then
+	echo "Debe indicar el número de episodio para poder actualizar." >&2
+	exit 1
+    fi
 	
-	re='^[0-9]+$'
-	if ! [[ $1 =~ $re ]]; then
-		echo "El número de episodio debe ser un número." >&2
-		exit 1
-	fi 
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]]; then
+	echo "El número de episodio debe ser un número." >&2
+	exit 1
+    fi 
 	
-	sintel -n anime.updateEpisodio:"$USERCHOICE|$1"
-	echo "El puntero de la serie ${anime[1]} ha sido actualizado a $1"
-	exit 0
+    sintel -n anime.updateEpisodio:"$USERCHOICE|$1"
+    echo "El puntero de la serie ${anime[1]} ha sido actualizado a $1"
+    exit 0
 else
-	if (( forthNumber > 0 )); then
-		forth ${anime[0]} ${anime[4]}
-		exit 0
-	fi
-	if (( backNumber > 0 )); then
-		back ${anime[0]} ${anime[4]}
-		exit 0
-	fi
+    if (( forthNumber > 0 )); then
+	forth ${anime[0]} ${anime[4]}
+	exit 0
+    fi
+    if (( backNumber > 0 )); then
+    	back ${anime[0]} ${anime[4]}
+	exit 0
+    fi
 fi
 
 # Reproducimos el episodio
-firefox "http://${anime[2]}${anime[4]}"
+x-www-browser "http://${anime[2]}${anime[4]}"
 echo
 echo -e "¿Desea avanzar el anime al siguiente episodio? (s/n): \c"
 read res
 if [[ $res = 's' ]] || [[ $res = 'S' ]]; then
-	sintel -f anime.next:${anime[0]}
-	echo "El puntero del anime se movió al siguiente episodio"
+    sintel -f anime.next:${anime[0]}
+    echo "El puntero del anime se movió al siguiente episodio"
 fi
-
